@@ -211,10 +211,10 @@ footer_html = f"""
     <div class="button-row">
       <a class="btn secondary{' disabled' if back_disabled else ''}"
          href="?slide={prev_i}" target="_self" aria-disabled="{str(back_disabled).lower()}">
-        ⬅ Back
+        Back
       </a>
       <a class="btn primary" href="?slide={next_i}" target="_self">
-        Next ➡
+        Next
       </a>
     </div>
     <div class="badge-wrapper">
