@@ -151,3 +151,69 @@ a, a:visited{ color:inherit; }
   transform: translateY(-3px);
   transition: transform 150ms ease;
 }
+
+
+/* ---- Mobile-safe spacing for fixed buttons ---- */
+.buttons{
+  position:fixed;
+  left:0; width:100%;
+  bottom: calc(16px + env(safe-area-inset-bottom)); /* respects iOS bottom bar */
+  display:flex; justify-content:center; gap:2rem; z-index:10;
+  padding-inline: 16px; /* prevent edge clipping on narrow screens */
+}
+
+/* Add scrollable space at the end of the page so the fixed buttons
+   never cover the last slide on short screens */
+.controls-spacer{
+  height: 120px; /* desktop default */
+}
+
+/* Make story chips width responsive (no hard 520px on phones) */
+.story-chip-row{
+  width: min(520px, 92vw);
+}
+
+/* Slightly smaller slide padding on narrow screens */
+@media (max-width: 768px){
+  .slide{
+    min-height: 56vh;
+    padding: 1.25rem 0.75rem;
+  }
+
+  /* tighter button gap, bigger tap targets */
+  .buttons{
+    gap: 0.75rem;
+  }
+
+  .stButton > button{
+    padding: 0.9rem 1rem;          /* larger thumb-friendly target */
+    font-size: 1rem;
+    border-radius: 12px!important;
+  }
+
+  /* extra bottom spacer for very short viewports */
+  .controls-spacer{
+    height: 160px;
+  }
+}
+
+/* Super small phones: stack the buttons vertically so nothing clips */
+@media (max-width: 420px){
+  .buttons{
+    flex-direction: column;
+    align-items: stretch;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    padding-inline: 12px;
+  }
+  .controls-spacer{ height: 180px; }
+}
+
+/* Respect notches/home indicators on iOS safely everywhere */
+html, body, [data-testid="stAppViewContainer"]{
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Make the chip tap area a bit taller on mobile without looking chunky */
+@media (max-width: 768px){
+  .story-chip{ height: 8px; }
+}
