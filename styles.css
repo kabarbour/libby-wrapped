@@ -1,29 +1,87 @@
-/* ───────────────── Libby Brand Theme ───────────────── */
+/* ============================================================================
+   LIBBY WRAPPED — THEME + LAYOUT (cleaned)
+   - Mobile-safe footer, no spacer element, iOS safe area respected
+   ========================================================================== */
+
+/* ----------------------------------------------------------------------------
+   0) THEME TOKENS
+---------------------------------------------------------------------------- */
 :root{
-  /* palette */
+  /* Palette */
   --teal-1:#219a91; --teal-2:#21a69c; --aqua:#44c0b7;
   --amber:#e48625; --indigo:#5157a6;
   --mulled:#57182e; --crimson:#a41d49; --magenta:#c5315f;
-  --ink:#e9e8e7; --bg:#121212;
+  --ink:#ffffff; --bg:#121212;
 
-  /* semantic */
+  /* Semantic */
   --accent:var(--crimson);
   --accent-2:var(--magenta);
   --accent-3:var(--amber);
   --surface:#171717; --surface-2:#1f1f1f;
 
-  /* fonts */
+  /* Fonts */
   --font-body:"SF Pro Text","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --font-head:"museo-slab",serif;
+
+  /* Layout */
+  --container-pad: 2rem;
+  --container-pad-sm: 1.25rem;
+  --button-radius: 10px;
+  --button-pad-y: 0.5rem;
+  --button-pad-x: 0.9rem;
 }
 
-/* App background + default foreground */
+/* ----------------------------------------------------------------------------
+   1) APP CONTAINER + GLOBAL
+---------------------------------------------------------------------------- */
 html, body, [data-testid="stAppViewContainer"]{
-  background:var(--bg) !important;
-  color:var(--ink) !important;
+  background: var(--bg) !important;
+  color:var(--bg) !important;
+  /* reserve room for fixed footer; scales with iOS home indicator */
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ───────────── Typography base ───────────── */
+/* ───────────── Hide Streamlit top banner / toolbar ───────────── */
+header[data-testid="stHeader"],
+footer { display: none !important; }
+
+#MainMenu { visibility: hidden; }  /* hides the "☰" menu if present */
+
+/* ───────────── Pull content all the way to the top ───────────── */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-testid="stAppViewContainer"] {
+  padding-top: 0 !important;
+}
+
+[data-testid="stAppViewContainer"] > .main {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+main, main .block-container {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Ensure slides start immediately under the top edge */
+.slide:first-child {
+  margin-top: 0 !important;
+  padding-top: 0.25rem; /* small breathing space */
+}
+
+
+/* ----------------------------------------------------------------------------
+   2) TYPOGRAPHY
+---------------------------------------------------------------------------- */
 body, .stMarkdown, .stText, .stWrite, p, li {
   font-family:var(--font-body);
   font-weight:400;
@@ -31,7 +89,6 @@ body, .stMarkdown, .stText, .stWrite, p, li {
   color:var(--ink);
 }
 
-/* Headings use Museo Slab */
 h1, h2, h3, h4,
 .stMarkdown h1, .stMarkdown h2, .stMarkdown h3{
   font-family:var(--font-head);
@@ -40,31 +97,28 @@ h1, h2, h3, h4,
   color:var(--ink);
 }
 
-/* ───────────── Slide layout ───────────── */
-.slide{
-  display:flex; flex-direction:column;
-  justify-content:center; align-items:center;
-  min-height:60vh; text-align:center;
-  padding:2rem 1rem;
+/* ----------------------------------------------------------------------------
+   3) SLIDES
+---------------------------------------------------------------------------- */
+.slide {
+  padding-top: 4rem;       /* move content down */
+  padding-bottom: 2rem;    /* keep some balance */
+  min-height: calc(100vh - 100px);
 }
-.slide.intro{ min-height:80vh; }
+.slide.intro{ min-height:70vh; }
 .centered{ text-align:center; }
 
-/* Typographic rhythm inside slides */
 .slide .stack{ display:flex; flex-direction:column; gap:0.9rem; }
 .slide .stack-lg{ gap:1.25rem; }
 
-/* Kicker (h3) — italic, smaller */
 .slide h1{
   font-family:var(--font-head);
   font-weight:500; font-style:italic;
   letter-spacing:-0.01em;
   font-size:clamp(18px, 2.2vw, 28px);
-  margin:0;
-  opacity:0.95;
+  margin:0; opacity:0.95;
 }
 
-/* Metric (h1) — big headline */
 .slide h3{
   font-family:var(--font-head);
   font-weight:300; font-style:normal;
@@ -74,146 +128,179 @@ h1, h2, h3, h4,
   margin:0;
 }
 
-/* Body copy + small/meta lines (both SF Pro) */
-.slide p{
-  margin:0;
-  font-family:var(--font-body);
-  line-height:1.5;
-}
-.slide p.small{
-  font-size:0.75rem;
+.slide p{ margin:0; font-family:var(--font-body); line-height:1.5; }
+.slide p.small{ font-size:0.75rem; font-style:italic; color:var(--teal-1); }
+.slide .body{ max-width:60ch; font-size:1.05rem; margin-inline:auto; }
+
+a.small-link {
+  font-size: 0.75rem;
   font-style: italic;
-  color:rgba(233,232,231,0.75); /* softer ink */
-}
-.slide .body{
-  max-width:60ch;
-  font-size:1.05rem;
-  margin-inline:auto;
+  text-decoration: underline; 
+  color: var(--teal-1);
+  transition: color 0.2s ease;  /* smooth hover */
 }
 
-/* ───────────── Badge ───────────── */
+a.small-link:hover {
+  color: var(--aqua);           /* subtle hover color */
+}
+
+/* Phones/tablets: let content sit higher (no tall min-height/centering) */
+@media (max-width: 768px) {
+  .slide {
+    padding-top: 2rem;
+    min-height: calc(100vh - 90px);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   4) BADGE
+---------------------------------------------------------------------------- */
+
+.badge-wrapper{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
 .badge{
-  display:inline-block; padding:6px 14px;
-  border-radius:999px;
-  background:var(--mulled);
-  border:1px solid rgba(87,24,46,0.6);
-  color:var(--ink); font-weight:700; font-size:.9rem;
-  font-family:var(--font-head);
+  display: inline-block;
+  padding: 4px 10px;                /* smaller padding */
+  border-radius: 999px;
+  color: var(--teal-1);
+  font-weight: 300;
+  font-size: 0.8rem;                /* smaller text */
+  font-family: var(--font-head);
+  letter-spacing: 0.2px;
 }
 
-/* ───────────── Buttons ───────────── */
-.stButton > button{
-  border:none!important; outline:none!important; box-shadow:none!important;
-  background:var(--crimson)!important; color:var(--ink)!important;
-  border-radius:14px!important;
-  font-family:var(--font-body); font-weight:600;
-  padding:0.6rem 1.2rem;
-  transition:background .2s ease, transform .1s ease;
-}
-.stButton > button:hover{ background:var(--mulled)!important; transform:translateY(-1px); }
-.stButton > button:focus, .stButton > button:active{ box-shadow:none!important; }
-.stButton > button[kind="secondary"]{ background:var(--surface-2)!important; color:var(--ink)!important; }
 
-.buttons{
-  position:fixed; bottom:40px; left:0; width:100%;
-  display:flex; justify-content:center; gap:2rem; z-index:10;
+/* ----------------------------------------------------------------------------
+   5) FOOTER NAV (fixed) + BUTTONS
+---------------------------------------------------------------------------- */
+/* Guard against iOS 'fixed-inside-transform' bug */
+[data-testid="stAppViewContainer"], main, main .block-container { transform: none !important; }
+
+/* Fixed footer (always pinned, all widths) */
+#footer-nav{
+  position: fixed;
+  inset: auto 0 0 0;                 /* bottom:0; left/right:0 */
+  width: 100vw;
+  z-index: 2147483647;
+  pointer-events: none;               /* clicks only on inner content */
 }
 
-/* ───────────── Story chips ───────────── */
+/* Footer content: buttons row + badge */
+#footer-nav .footer-inner{
+  pointer-events: auto;
+  margin: 0 auto;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  padding: 6px 12px calc(env(safe-area-inset-bottom, 0px) + 10px);
+}
+
+/* Button row */
+#footer-nav .button-row{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .6rem;
+}
+
+/* Compact buttons (anchors styled as buttons) */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: .82rem;
+  line-height: 1.05;
+  padding: .6rem .9rem;             /* smaller */
+  min-height: 0;
+  transition: background .2s ease, transform .1s ease, opacity .1s ease;
+  user-select: none;
+}
+.btn.primary{  background: var(--crimson); color: var(--ink); }
+.btn.primary:hover{ background: var(--magenta); transform: translateY(-1px); }
+
+.btn.secondary{ background: var(--crimson); color: var(--ink); }
+.btn.secondary:hover{ background: var(--magenta); transform: translateY(-1px); }
+
+.btn.disabled{
+  pointer-events: none;
+  opacity: .5;
+  transform: none !important;
+}
+
+/* Remove underline / link styling */
+a.btn {
+  text-decoration: none !important;
+  border: none;
+}
+
+a.btn:focus, a.btn:active {
+  outline: none !important;
+  text-decoration: none !important;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+
+/* Centered, compact badge in the footer */
+#footer-nav .badge-wrapper{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+#footer-nav .badge{
+  padding: 4px 10px;
+  color: var(--teal-1);
+  font-weight: 300;
+  font-size: 0.8rem;
+  font-family: var(--font-head);
+  letter-spacing: 0.2px;
+}
+
+/* Small phones: allow wrap while keeping two-up look */
+@media (max-width: 420px){
+  #footer-nav .button-row{ flex-wrap: wrap; gap: .5rem; }
+  .btn{ flex: 1 1 45%; font-size: .78rem; padding: .32rem .56rem; border-radius: 7px; }
+}
+
+/* Make sure page content can scroll behind the fixed footer */
+html, body, [data-testid="stAppViewContainer"]{
+  padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); /* room for buttons + badge */
+}
+
+
+/* ----------------------------------------------------------------------------
+   6) STORY CHIPS
+---------------------------------------------------------------------------- */
 a, a:visited{ color:inherit; }
-.story-chip-row{ width:520px; margin:6px auto 16px; display:flex; gap:6px; }
+
+.story-chip-row{
+  width:min(520px, 92vw);
+  margin:6px auto 12px;
+  display:flex; gap:6px;
+}
 .story-chip{
   flex:1 1 0; display:block; height:6px; border-radius:999px;
-  background:rgba(255,255,255,0.15); overflow:hidden; text-decoration:none;
+  background: var(--mulled); overflow:hidden; text-decoration:none;
 }
 .story-chip > span{
   display:block; height:100%;
-  background:var(--aqua);               /* flat teal fill (no gradient) */
+  background:rgba(197, 49, 95, 0.8);
   transition:width 250ms ease;
-}
-
-/* Float-in animation */
-@keyframes float-in-up {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-/* Base reveal class */
-.reveal {
-  opacity: 0; /* ensures we don't flash before animation */
-  animation: float-in-up 500ms ease-out both;
-  animation-delay: var(--delay, 0ms);
-  will-change: transform, opacity;
-}
-
-/* (Optional) subtle hover lift for cards */
-.card:hover {
-  transform: translateY(-3px);
-  transition: transform 150ms ease;
-}
-
-
-/* ---- Mobile-safe spacing for fixed buttons ---- */
-.buttons{
-  position:fixed;
-  left:0; width:100%;
-  bottom: calc(16px + env(safe-area-inset-bottom)); /* respects iOS bottom bar */
-  display:flex; justify-content:center; gap:2rem; z-index:10;
-  padding-inline: 16px; /* prevent edge clipping on narrow screens */
-}
-
-/* Add scrollable space at the end of the page so the fixed buttons
-   never cover the last slide on short screens */
-.controls-spacer{
-  height: 120px; /* desktop default */
-}
-
-/* Make story chips width responsive (no hard 520px on phones) */
-.story-chip-row{
-  width: min(520px, 92vw);
-}
-
-/* Slightly smaller slide padding on narrow screens */
-@media (max-width: 768px){
-  .slide{
-    min-height: 56vh;
-    padding: 1.25rem 0.75rem;
-  }
-
-  /* tighter button gap, bigger tap targets */
-  .buttons{
-    gap: 0.75rem;
-  }
-
-  .stButton > button{
-    padding: 0.9rem 1rem;          /* larger thumb-friendly target */
-    font-size: 1rem;
-    border-radius: 12px!important;
-  }
-
-  /* extra bottom spacer for very short viewports */
-  .controls-spacer{
-    height: 160px;
-  }
-}
-
-/* Super small phones: stack the buttons vertically so nothing clips */
-@media (max-width: 420px){
-  .buttons{
-    flex-direction: column;
-    align-items: stretch;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    padding-inline: 12px;
-  }
-  .controls-spacer{ height: 180px; }
-}
-
-/* Respect notches/home indicators on iOS safely everywhere */
-html, body, [data-testid="stAppViewContainer"]{
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-/* Make the chip tap area a bit taller on mobile without looking chunky */
-@media (max-width: 768px){
-  .story-chip{ height: 8px; }
 }

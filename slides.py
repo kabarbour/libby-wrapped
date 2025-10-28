@@ -23,7 +23,7 @@ def get_slides() -> List[Slide]:
             subtitle="It’s not a competition… but nice work.",
             title="You finished <b>{full_books}</b> books this year.",
             body="And <b>{novellas}</b> novellas! That’s more than <b>{percentile}%</b> of readers.",
-            notes="""Based on data from <a href="https://today.yougov.com/entertainment/articles/48239-54-percent-of-americans-read-a-book-this-year">YouGov 2023</a>."""
+            notes="""Based on data from <a href="https://today.yougov.com/entertainment/articles/48239-54-percent-of-americans-read-a-book-this-year" class="small-link" target="_blank">YouGov 2023</a>."""
         ),
     
         Slide(
